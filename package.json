@@ -3,8 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@ionic/core": "^4.4.2",
+    "@ionic/react": "0.0.5",
+    "@types/react-router": "^5.0.1",
+    "@types/react-router-dom": "^4.3.3",
+    "capacitor": "^0.5.5",
+    "firebase": "^6.1.0",
+    "firestore-export-import": "^0.2.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
+    "react-router": "^5.0.0",
+    "react-router-dom": "^5.0.0",
     "react-scripts": "3.0.1"
   },
   "scripts": {
