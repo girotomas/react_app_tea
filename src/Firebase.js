@@ -1,4 +1,6 @@
 import * as firebase from 'firebase';
+import pick from 'lodash/pick';
+import {user_set} from './Firestore'
 
 var firebaseConfig = {
     apiKey: "AIzaSyDe-JgL1_glAu9YAyJvp5-MqjRI7afEHTQ",
@@ -19,10 +21,23 @@ export default !firebase.apps.length ? firebase.initializeApp(firebaseConfig) : 
 var provider = new firebase.auth.FacebookAuthProvider();
 
 var fireLogin = ()=>firebase.auth().signInWithPopup(provider).then(function(result) {
-  // This gives you a Facebook Access Token. You can use it to access the Facebook API.
-  var token = result.credential.accessToken;
-  // The signed-in user info.
-  var user = result.user;
+	// This gives you a Facebook Access Token. You can use it to access the Facebook API.
+	var token = result.credential.accessToken;
+	// The signed-in user info.
+	var user = result.user;
+	console.log('fireLogin user');
+	var user =  pick(user, ['createdAt', 'displayName', 'email', 'lastLoginAt', 'photoURL', 'uid'])
+	if (user.photoURL) user_set(firebase,'fbPhoto', user.photoURL);
+	if (user.uid) user_set(firebase,'uid', user.uid);
+	if (user.displayName) user_set(firebase,'fbDisplayName', user.displayName)
+	console.log('/users/'+firebase.auth().currentUser.uid+'/fireLogin/fireLogin')
+	firebase.firestore().doc('/users/'+firebase.auth().currentUser.uid).set(user, {merge:true})
+	.then(function() {
+	    console.log("Document successfully written!");
+	})
+	.catch(function(error) {
+	    console.error("Error writing document: ", error);
+	});
   // ...
 }).catch(function(error) {
   // Handle Errors here.

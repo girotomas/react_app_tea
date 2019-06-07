@@ -8,12 +8,12 @@ import {
   IonContent, IonList, IonListHandler, IonLabel, IonItem,
   IonCard, IonHeader, IonToolbar, IonTitle, IonFab, IonFabButton,
   IonCardHeader, IonIcon, IonTabButton, IonTabBar,
-  IonCardTitle, IonRouterOutlet,
-  IonCardSubtitle,
+  IonCardTitle, IonRouterOutlet, IonMenu,
+  IonCardSubtitle, IonSplitPane,IonPage, 
   IonButton
 } from '@ionic/react';
-import {Route} from 'react-router-dom'
-import {Feed, Categories, Profile, Comments, Friends} from './components/Tabs'
+import {Route, Switch} from 'react-router-dom'
+import {Feed, Categories, Profile, YourWall, Friends} from './components/Tabs'
 
 class PleaseLogin extends React.Component{
 	render(){
@@ -39,11 +39,15 @@ class App extends React.Component {
 		return (
 			<div>
 		  	<IonApp>
+		  		<IonContent>
+
 			    <IonTabs>
+			    	
 			    	<IonRouterOutlet>
-				        <Route path="/feed" component={Feed} exact={true} />
+				        <Route path="/feed" render={()=><Feed data={this.props.data}/>} exact={true} />
+				        <Route path="/categories" render={()=><Categories data={this.props.data}/>} exact={true} />
 				        <Route path="/friends" render={()=><Friends data={this.props.data}/>} exact={true} />
-				        <Route path="/comments" component={Comments} exact={true} />
+				        <Route path="/yourwall" render={()=><YourWall data={this.props.data}/>} exact={true} />
 				        {/*<Route path="/categories" render={()=><Categories data={this.props.data} selected={this.state.selected}/>}  exact={true} />*/}
 				        <Route path="/profile"  render={()=><Profile data={this.props.data}/>} exact={true} />
       				</IonRouterOutlet>
@@ -69,16 +73,17 @@ class App extends React.Component {
 				   	   		<IonLabel>Friends</IonLabel>
 				   	   		<IonIcon name="people"></IonIcon>
 				    	</IonTabButton>
-				    	<IonTabButton tab="comments" href='/comments'>
-				   	   		<IonLabel>Comments</IonLabel>
+				    	<IonTabButton tab="yourwall" href='/yourwall'>
+				   	   		<IonLabel>My Wall</IonLabel>
 				   	   		<IonIcon name="chatboxes"></IonIcon>
 				    	</IonTabButton>
 				    	<IonTabButton tab="profile" href='/profile'>
-				   	   		<IonLabel>Comments</IonLabel>
+				   	   		<IonLabel>Profile</IonLabel>
 				   	   		<IonIcon name="person"></IonIcon>
 				    	</IonTabButton>
 				  	</IonTabBar>
 				</IonTabs>
+				</IonContent>
 			</IonApp>
 			</div>
 		);

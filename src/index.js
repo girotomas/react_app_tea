@@ -4,6 +4,9 @@ import App from './App';
 import firebase, {fireLogin, authStateChanged} from './Firebase.js'
 import { Router} from "react-router";
 import { BrowserRouter } from 'react-router-dom';
+import {subscribeToUserFile } from './Firestore';
+import Material from './Material'
+import Baseline from './NewApp/Baseline';
 
 var db = firebase.firestore();
 
@@ -23,6 +26,8 @@ class Index extends React.Component {
 				tea_categories: [],
 				user:null,
 				user_file:null,
+				friends: {},
+				friends_uids:[],
 			}
 		};
 		var that = this;
@@ -37,29 +42,46 @@ class Index extends React.Component {
 	            	return state}
 	            )});
 	    });
+
 	}
 
 	componentDidMount() {
     	firebase.auth().onAuthStateChanged((user) => {
         	this.setState((state)=>{state.data.user=user; return state})
-        	var that =this
-        	db.doc('/users/'+user.uid).onSnapshot(function(doc) {
-		        console.log("Current user_file: ", doc.data());
-		        	that.setState((state)=>{state.data.user_file = doc.data(); return state;})
-		    });
-	    })
+        	if (user){
+        		db.doc('/users/'+user.uid).onSnapshot((doc)=> {
+			        console.log("Current user_file: ", doc.data());
+			        this.setState((state)=>{state.data.user_file = doc.data(); return state;})
+			        var user_file= doc.data();
+
+			        var friends_uids = user_file.friends && Object.keys(user_file.friends)
+		    		this.setState((state)=>{
+		    			state.data.friends_uids=friends_uids
+		    			return state});
+		    		friends_uids.forEach((uid)=>{
+		    			subscribeToUserFile(firebase, uid, (file)=>{
+		    				this.setState((state)=>{
+		    					console.log(JSON.stringify(state),'new state')
+		    					state.data.friends[uid]=file
+		    					return state
+		    				})
+		    			})
+		    		})
+		    	})
+		    }
+	    });
 	}
 
 
 
   render() {
   	//return <App data={this.state.data}/>
-  	return (<App data={this.state.data}/>);
+  	return (<Baseline data={this.state.data}/>);
   }
 }
 
-
-ReactDOM.render(<BrowserRouter><Index/></BrowserRouter>, document.getElementById('root'));
+ReactDOM.render(<BrowserRouter><Index/></BrowserRouter>, document.getElementById('root'))
+//ReactDOM.render(<BrowserRouter><Index/></BrowserRouter>, document.getElementById('root'));
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
